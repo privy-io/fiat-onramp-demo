@@ -1,65 +1,90 @@
-import '../styles/globals.css';
-import type {AppProps} from 'next/app';
-import Head from 'next/head';
-import {PrivyProvider} from '@privy-io/react-auth';
-import {useRouter} from 'next/router';
-import {initializeDatadog, setDatadogUser} from '../lib/datadog';
-import {useMemo} from 'react';
-import React from 'react';
-import type {PrivyTheme} from '../src/types';
-import useLocalStorage from '../src/useLocalStorage';
-import useDarkMode from '../src/useMedia';
+import "../styles/globals.css";
+import type { AppProps } from "next/app";
+import Head from "next/head";
+import { PrivyProvider } from "@privy-io/react-auth";
+import { useRouter } from "next/router";
+import { initializeDatadog, setDatadogUser } from "../lib/datadog";
+import { useMemo } from "react";
+import React from "react";
+import type { PrivyTheme } from "../src/types";
+import useLocalStorage from "../src/useLocalStorage";
+import useDarkMode from "../src/useMedia";
 
-const privyLogo = 'https://pub-dc971f65d0aa41d18c1839f8ab426dcb.r2.dev/privy.png';
-const privyLogoDark = 'https://pub-dc971f65d0aa41d18c1839f8ab426dcb.r2.dev/privy-dark.png';
+const privyLogo =
+  "https://pub-dc971f65d0aa41d18c1839f8ab426dcb.r2.dev/privy.png";
+const privyLogoDark =
+  "https://pub-dc971f65d0aa41d18c1839f8ab426dcb.r2.dev/privy-dark.png";
 
 const themes: Array<PrivyTheme> = [
   {
     logo: privyLogo,
-    name: 'Privy Light (default)',
+    name: "Privy Light (default)",
   },
   {
-    theme: 'dark',
+    theme: "dark",
     logo: privyLogoDark,
-    name: 'Privy Dark',
+    name: "Privy Dark",
   },
   {
-    name: 'System',
+    name: "System",
     logo: privyLogoDark,
   },
   {
-    theme: '#13152F',
-    accentColor: '#673FD7',
+    theme: "#13152F",
+    accentColor: "#673FD7",
     logo: privyLogoDark,
-    name: 'Linear',
+    name: "Linear",
   },
   {
-    theme: '#FCF7EE',
-    accentColor: '#38CCCD',
+    theme: "#FCF7EE",
+    accentColor: "#38CCCD",
     logo: privyLogo,
-    name: 'Cream',
+    name: "Cream",
   },
   {
-    theme: '#425047',
-    accentColor: '#A7C080',
+    theme: "#425047",
+    accentColor: "#A7C080",
     logo: privyLogoDark,
-    name: 'Forest',
+    name: "Forest",
   },
 ];
 
-function MyApp({Component, pageProps}: AppProps) {
+function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter();
-  const [theme, setTheme] = useLocalStorage('privy-auth-demo:theme', themes[0]!);
+  const [theme, setTheme] = useLocalStorage(
+    "privy-auth-demo:theme",
+    themes[0]!
+  );
   const darkMode = useDarkMode();
   useMemo(initializeDatadog, []);
 
   return (
     <>
       <Head>
-        <link rel="preload" href="/fonts/AdelleSans-Regular.woff" as="font" crossOrigin="" />
-        <link rel="preload" href="/fonts/AdelleSans-Regular.woff2" as="font" crossOrigin="" />
-        <link rel="preload" href="/fonts/AdelleSans-Semibold.woff" as="font" crossOrigin="" />
-        <link rel="preload" href="/fonts/AdelleSans-Semibold.woff2" as="font" crossOrigin="" />
+        <link
+          rel="preload"
+          href="/fonts/AdelleSans-Regular.woff"
+          as="font"
+          crossOrigin=""
+        />
+        <link
+          rel="preload"
+          href="/fonts/AdelleSans-Regular.woff2"
+          as="font"
+          crossOrigin=""
+        />
+        <link
+          rel="preload"
+          href="/fonts/AdelleSans-Semibold.woff"
+          as="font"
+          crossOrigin=""
+        />
+        <link
+          rel="preload"
+          href="/fonts/AdelleSans-Semibold.woff2"
+          as="font"
+          crossOrigin=""
+        />
 
         <link rel="icon" href="/favicon.ico" sizes="any" />
 
@@ -67,21 +92,36 @@ function MyApp({Component, pageProps}: AppProps) {
         <meta name="description" content="Internal auth demo for Privy Auth" />
       </Head>
       <PrivyProvider
-        appId={process.env.NEXT_PUBLIC_PRIVY_APP_ID || ''}
+        appId={process.env.NEXT_PUBLIC_PRIVY_APP_ID || ""}
         onSuccess={(user) => {
           setDatadogUser(user);
-          router.push('/dashboard');
+          router.push("/dashboard");
         }}
         config={{
           appearance: {
-            theme: theme.name === 'System' ? (darkMode ? 'dark' : 'light') : theme.theme,
+            theme:
+              theme.name === "System"
+                ? darkMode
+                  ? "dark"
+                  : "light"
+                : theme.theme,
             accentColor: theme.accentColor,
-            logo: theme.name === 'System' ? (darkMode ? privyLogoDark : privyLogo) : theme.logo,
+            logo:
+              theme.name === "System"
+                ? darkMode
+                  ? privyLogoDark
+                  : privyLogo
+                : theme.logo,
           },
         }}
         createPrivyWalletOnLogin
       >
-        <Component {...pageProps} themes={themes} theme={theme} setTheme={setTheme} />
+        <Component
+          {...pageProps}
+          themes={themes}
+          theme={theme}
+          setTheme={setTheme}
+        />
       </PrivyProvider>
     </>
   );
