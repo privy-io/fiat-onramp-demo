@@ -1,9 +1,9 @@
-import Portal from '../components/graphics/portal';
-import {usePrivy, VERSION} from '@privy-io/react-auth';
-import Head from 'next/head';
-import {useEffect} from 'react';
-import {useRouter} from 'next/router';
-import type {PrivyTheme} from '../src/types';
+import Portal from "../components/graphics/portal";
+import { usePrivy, VERSION } from "@privy-io/react-auth";
+import Head from "next/head";
+import { useEffect } from "react";
+import { useRouter } from "next/router";
+import type { PrivyTheme } from "../src/types";
 
 export default function LoginPage({
   themes,
@@ -15,11 +15,11 @@ export default function LoginPage({
   setTheme: (theme: PrivyTheme) => void;
 }) {
   const router = useRouter();
-  const {ready, authenticated, login} = usePrivy();
+  const { ready, authenticated, login } = usePrivy();
 
   useEffect(() => {
     if (ready && authenticated) {
-      router.push('/dashboard');
+      router.push("/dashboard");
     }
   }, [ready, authenticated, router]);
 
@@ -35,7 +35,9 @@ export default function LoginPage({
         </span>
         <select
           value={theme.name}
-          onChange={(e) => setTheme(themes.find((theme) => theme.name === e.target.value)!)}
+          onChange={(e) =>
+            setTheme(themes.find((theme) => theme.name === e.target.value)!)
+          }
         >
           {themes.map((theme: any) => (
             <option key={theme.name} value={theme.name}>
@@ -48,7 +50,7 @@ export default function LoginPage({
         <div className="flex flex-1 items-center justify-center bg-privy-light-blue p-6">
           <div>
             <div>
-              <Portal style={{maxWidth: '100%', height: 'auto'}} />
+              <Portal style={{ maxWidth: "100%", height: "auto" }} />
             </div>
             <div className="mt-6 flex justify-center text-center">
               <button
