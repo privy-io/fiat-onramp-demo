@@ -2,6 +2,7 @@ import "../styles/globals.css";
 import type { AppProps } from "next/app";
 import Head from "next/head";
 import { PrivyProvider } from "@privy-io/react-auth";
+import { PrivyOnrampProvider } from "../hooks/onramp-context";
 import { useRouter } from "next/router";
 import { initializeDatadog, setDatadogUser } from "../lib/datadog";
 import { useMemo } from "react";
@@ -116,12 +117,14 @@ function MyApp({ Component, pageProps }: AppProps) {
         }}
         createPrivyWalletOnLogin
       >
-        <Component
-          {...pageProps}
-          themes={themes}
-          theme={theme}
-          setTheme={setTheme}
-        />
+        <PrivyOnrampProvider>
+          <Component
+            {...pageProps}
+            themes={themes}
+            theme={theme}
+            setTheme={setTheme}
+          />
+        </PrivyOnrampProvider>
       </PrivyProvider>
     </>
   );

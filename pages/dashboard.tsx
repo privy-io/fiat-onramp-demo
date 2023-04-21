@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useRouter } from "next/router";
-import OnRampModal from "../components/onramp";
+import { useOnramp } from "../hooks/onramp-context";
 import React, { useEffect, useState } from "react";
 import { usePrivy } from "@privy-io/react-auth";
 import type { User, WalletWithMetadata } from "@privy-io/react-auth";
@@ -70,6 +70,7 @@ export const DismissableInfo = ({
 };
 export default function LoginPage() {
   const router = useRouter();
+  const { fundWallet } = useOnramp();
 
   const [signLoading, setSignLoading] = useState(false);
   const [signSuccess, setSignSuccess] = useState(false);
@@ -77,9 +78,6 @@ export default function LoginPage() {
 
   // Signature produced using `signMessage`
   const [signature, setSignature] = useState<string | null>(null);
-
-  const [addressToFund, setAddressToFund] = useState<string | null>(null);
-  const [onRampUrl, setOnRampUrl] = useState<string | null>(null);
 
   const {
     ready,
@@ -120,28 +118,6 @@ export default function LoginPage() {
     logout();
   }
 
-  const getOnRampUrl = async (address: string, email?: string | null) => {
-    try {
-      const authToken = await getAccessToken();
-      const onRampResponse = await axios.post(
-        "/api/onramp",
-        {
-          address: address,
-          email: email,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-          },
-        }
-      );
-      return onRampResponse.data.url as string;
-    } catch (error) {
-      console.error(error);
-      return undefined;
-    }
-  };
-
   const onCreate = async () => {
     try {
       const wallet = await createWallet();
@@ -165,12 +141,6 @@ export default function LoginPage() {
     }
   };
 
-  const fundWallet = async (address?: string | null, email?: string | null) => {
-    if (!address) return;
-    const url = await getOnRampUrl(address, email);
-    if (url) setOnRampUrl(url);
-  };
-
   const [privyWallets, wallets] = getWallets(user);
 
   return (
@@ -182,10 +152,6 @@ export default function LoginPage() {
       <main className="flex min-h-screen flex-col bg-privy-light-blue px-4 py-6 sm:px-20 sm:py-10">
         {ready && authenticated ? (
           <>
-            <OnRampModal
-              onRampUrl={onRampUrl}
-              onClose={() => setOnRampUrl(null)}
-            />
             <div className="flex flex-row justify-between">
               <h1 className="text-2xl font-semibold">Privy Auth Demo</h1>
               <div className="flex flex-row gap-4">
@@ -311,7 +277,9 @@ export default function LoginPage() {
               <div className="flex flex-col items-start gap-2 py-2">
                 <button
                   onClick={() => {
-                    fundWallet(user?.wallet?.address, user?.email?.address);
+                    const address = user?.wallet?.address;
+                    if (!address) return;
+                    fundWallet?.(address, user?.email?.address);
                   }}
                   className="rounded-md border-none bg-violet-600 px-4 py-2 text-sm text-white transition-all hover:bg-violet-700"
                 >
