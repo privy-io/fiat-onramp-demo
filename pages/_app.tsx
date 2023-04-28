@@ -96,7 +96,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         appId={process.env.NEXT_PUBLIC_PRIVY_APP_ID || ""}
         onSuccess={(user) => {
           setDatadogUser(user);
-          router.push("/dashboard");
+          router.push("/home");
         }}
         config={{
           appearance: {
