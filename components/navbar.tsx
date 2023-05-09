@@ -8,7 +8,7 @@ import {
   XMarkIcon,
   InformationCircleIcon,
 } from "@heroicons/react/24/outline";
-import { Logo } from "./Logo";
+import { PrivyLogo } from "./Logo";
 
 function classNames(...classes: Array<string | boolean>): string {
   return classes.filter(Boolean).join(" ");
@@ -61,10 +61,10 @@ export default function Navbar({ items, accountId, appName }: NavbarProps) {
               <div className="flex items-center">
                 <div className="flex-shrink-0">
                   <div className="mb-2 block h-8 w-auto lg:hidden">
-                    <Logo />
+                    <PrivyLogo />
                   </div>
                   <div className="mb-2 hidden h-8 w-auto hover:cursor-pointer lg:block">
-                    <Logo />
+                    <PrivyLogo />
                   </div>
                 </div>
                 <div className="hidden sm:ml-6 sm:block">

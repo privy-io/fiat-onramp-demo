@@ -4,7 +4,7 @@ interface LogoPropsType {
   height?: string;
 }
 
-export function Logo(props: LogoPropsType) {
+export function PrivyLogo(props: LogoPropsType) {
   const fontColor = props.fontColor || "white";
   const width = props.width || "151";
   const height = props.height || "44";

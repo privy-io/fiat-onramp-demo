@@ -1,14 +1,24 @@
 import { Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
+import Image from "next/image";
 
 type OnRampModalProps = {
-  onRampUrl: string | null;
+  onrampUrl: string | null;
   onClose: () => void;
 };
 
-export default function OnRampModal({ onRampUrl, onClose }: OnRampModalProps) {
+export default function OnRampModal({ onrampUrl, onClose }: OnRampModalProps) {
+  const onContinue = () => {
+    // This should never happen, as the modal is only open when onrampUrl is defined
+    if (!onrampUrl) return;
+
+    window.open(onrampUrl, "_blank");
+    onClose();
+  };
+
   return (
-    <Transition.Root show={!!onRampUrl} as={Fragment}>
+    // Only show modal if onrampUrl is defined
+    <Transition.Root show={!!onrampUrl} as={Fragment}>
       <Dialog as="div" className="relative z-10" onClose={onClose}>
         <Transition.Child
           as={Fragment}
@@ -33,29 +43,67 @@ export default function OnRampModal({ onRampUrl, onClose }: OnRampModalProps) {
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <Dialog.Panel className="relative my-8 min-w-fit transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-2 text-left shadow-xl transition-all  sm:p-6">
+              <Dialog.Panel className="relative my-8 w-5/12 transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-2 text-left shadow-xl transition-all">
                 <div>
-                  <div className="mt-3 text-center sm:mt-3">
+                  <div className="text-center sm:mt-3">
                     <Dialog.Title
                       as="h3"
                       className="text-base font-semibold leading-6 text-gray-900"
                     >
-                      Fund your wallet
+                      <p className="pb-2 text-sm font-semibold text-gray-400">
+                        Fund your wallet with
+                      </p>
+                      <Image
+                        src="/images/moonpay.svg"
+                        height="50px"
+                        width="200px"
+                      />
                     </Dialog.Title>
                   </div>
                 </div>
-                <div className="mt-5 sm:mt-6">
-                  <iframe
-                    src={onRampUrl as string}
-                    className="mb-6 h-[550px] w-[500px] rounded-md"
-                  />
-                  <button
-                    type="button"
-                    className="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                    onClick={onClose}
-                  >
-                    Close
-                  </button>
+                <div className="mt-6 w-full">
+                  <div className="w-full px-4 pb-2 text-center">
+                    <p className="mb-3">
+                      This app partners with{" "}
+                      <a
+                        className="font-semibold text-indigo-600"
+                        href="https://www.moonpay.com/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Moonpay
+                      </a>{" "}
+                      to help you fund your wallet.
+                    </p>
+                    <p className="mb-3">
+                      Moonpay allows you to securely purchase crypto using your
+                      credit card, debit card, bank account, Apple/Google Pay,
+                      and more.
+                    </p>
+                    <p className="mb-3">
+                      Click{" "}
+                      <span className="text-indig-600 font-semibold">
+                        Continue
+                      </span>{" "}
+                      to open Moonpay in a new tab.
+                    </p>
+                  </div>
+                  <div className="flex w-full gap-x-2 px-4 pb-2">
+                    <button
+                      type="button"
+                      className="inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-indigo-500 shadow-sm outline outline-1 outline-indigo-500 hover:bg-indigo-50 hover:text-indigo-700"
+                      onClick={onClose}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      className="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                      onClick={onContinue}
+                    >
+                      Continue
+                    </button>
+                  </div>
                 </div>
               </Dialog.Panel>
             </Transition.Child>

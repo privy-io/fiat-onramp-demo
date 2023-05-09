@@ -2,7 +2,6 @@ import "../styles/globals.css";
 import type { AppProps } from "next/app";
 import Head from "next/head";
 import { PrivyProvider } from "@privy-io/react-auth";
-import { PrivyOnrampProvider } from "../hooks/onramp-context";
 import { useRouter } from "next/router";
 import { initializeDatadog, setDatadogUser } from "../lib/datadog";
 import { useMemo } from "react";
@@ -89,7 +88,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 
         <link rel="icon" href="/favicon.ico" sizes="any" />
 
-        <title>Privy Auth Demo</title>
+        <title>Fiat Onramp Demo</title>
         <meta name="description" content="Internal auth demo for Privy Auth" />
       </Head>
       <PrivyProvider
@@ -98,6 +97,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           setDatadogUser(user);
           router.push("/home");
         }}
+        apiUrl="https://auth.staging.privy.io"
         config={{
           appearance: {
             theme:
@@ -117,14 +117,12 @@ function MyApp({ Component, pageProps }: AppProps) {
         }}
         createPrivyWalletOnLogin
       >
-        <PrivyOnrampProvider>
-          <Component
-            {...pageProps}
-            themes={themes}
-            theme={theme}
-            setTheme={setTheme}
-          />
-        </PrivyOnrampProvider>
+        <Component
+          {...pageProps}
+          themes={themes}
+          theme={theme}
+          setTheme={setTheme}
+        />
       </PrivyProvider>
     </>
   );

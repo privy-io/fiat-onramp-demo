@@ -7,8 +7,6 @@ export type APIError = {
   cause?: string;
 };
 
-// Instantiate the global Privy client.
-// TODO: Refactor this out if we expand backend usage of Privy.
 const PRIVY_APP_ID = process.env.NEXT_PUBLIC_PRIVY_APP_ID;
 const PRIVY_APP_SECRET = process.env.PRIVY_APP_SECRET;
 const PRIVY_AUTH_URL_OVERRIDE = process.env.NEXT_PUBLIC_PRIVY_AUTH_URL;

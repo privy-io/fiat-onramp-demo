@@ -1,37 +1,11 @@
 import axios from "axios";
 import { useRouter } from "next/router";
-import { useOnramp } from "../hooks/onramp-context";
 import React, { useEffect, useState } from "react";
 import { usePrivy } from "@privy-io/react-auth";
-import type { User, WalletWithMetadata } from "@privy-io/react-auth";
 import Head from "next/head";
 import { clearDatadogUser } from "../lib/datadog";
-import { InformationCircleIcon } from "@heroicons/react/20/solid";
-
-/**
- * Gets a tuple of wallets where the first item in the tuple
- * is privy (embedded) wallets and the second is any other wallet.
- */
-function getWallets(
-  user: User | null
-): [WalletWithMetadata[], WalletWithMetadata[]] {
-  if (!user) {
-    return [[], []];
-  }
-
-  return user.linkedAccounts.reduce(
-    (tuple, acct) => {
-      if (acct.type === "wallet" && acct.walletClient === "privy") {
-        tuple[0].push(acct);
-      } else if (acct.type === "wallet") {
-        tuple[1].push(acct);
-      }
-
-      return tuple;
-    },
-    [[], []] as [WalletWithMetadata[], WalletWithMetadata[]]
-  );
-}
+import OnRampModal from "../components/onramp";
+import { ethers } from "ethers";
 
 function formatAddress(address?: string | null) {
   if (!address) return "";
@@ -40,51 +14,76 @@ function formatAddress(address?: string | null) {
   return `${leading}...${trailing}`;
 }
 
-export const DismissableInfo = ({
-  message,
-  clickHandler,
-}: {
-  message: string;
-  clickHandler?: () => void | null;
-}) => {
-  return (
-    <div className="my-2 flex justify-between rounded-md bg-slate-50 px-4 py-2 text-slate-800">
-      <div className="flex flex-row items-center gap-2 text-sm">
-        <InformationCircleIcon
-          className="h-4 w-4 text-slate-400"
-          aria-hidden="true"
-        />
-        <p>{message}</p>
-      </div>
-      {clickHandler && (
-        <button
-          type="button"
-          onClick={clickHandler}
-          className="ml-6 rounded-md bg-slate-50 px-2 text-xs text-slate-800 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-600 focus:ring-offset-2 focus:ring-offset-slate-50"
-        >
-          Dismiss
-        </button>
-      )}
-    </div>
-  );
-};
-export default function LoginPage() {
-  const router = useRouter();
-  const { fundWallet } = useOnramp();
-
-  // Signature produced using `signMessage`
-  const [signature, setSignature] = useState<string | null>(null);
-
+export default function HomePage() {
   const {
     ready,
     authenticated,
     user,
     logout,
     getAccessToken,
-    createWallet,
     signMessage,
+    sendTransaction,
     exportWallet,
   } = usePrivy();
+
+  const router = useRouter();
+  // Signature produced using `signMessage`
+  const [signature, setSignature] = useState<string | null>(null);
+  // Fiat onramp URL returned from server
+  const [onrampUrl, setOnrampUrl] = useState<string | null>(null);
+  const [balance, setBalance] = useState<string | undefined>(undefined);
+
+  const hasEmbeddedWallet =
+    user && user.wallet && user.wallet.walletClient === "privy";
+
+  const updateBalance = async () => {
+    if (!user?.wallet?.address) return;
+    try {
+      const ethersProvider = new ethers.InfuraProvider(
+        "goerli",
+        process.env.NEXT_PUBLIC_INFURA_API_KEY
+      );
+      const balanceInWei = await ethersProvider.getBalance(user.wallet.address);
+      setBalance(ethers.formatEther(balanceInWei));
+    } catch (error) {
+      console.error(`Cannot connect to Infura with error: ${error}`);
+    }
+  };
+  updateBalance();
+
+  const fundWallet = async () => {
+    // Error if user does not have an embedded wallet
+    if (!hasEmbeddedWallet) {
+      console.error("Unable to fund wallet.");
+      return false;
+    }
+
+    // Get onramp URL from server and kick off onramp flow
+    try {
+      const authToken = await getAccessToken();
+      const redirectUrl = window.location.href;
+      // This simulates a request to Privy's server
+      const onrampResponse = await axios.post(
+        "/api/onramp",
+        {
+          address: user!.wallet!.address,
+          email: user?.email?.address,
+          redirectUrl: redirectUrl,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        }
+      );
+      setOnrampUrl(onrampResponse.data.url as string);
+      // const url = new URL(onrampResponse.data.url as string);
+      // url.searchParams.set('redirectURL', window.location.href);
+      // setOnrampUrl(url.toString());
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   useEffect(() => {
     if (ready && !authenticated) {
@@ -107,15 +106,6 @@ export default function LoginPage() {
     logout();
   }
 
-  const onCreate = async () => {
-    try {
-      const wallet = await createWallet();
-      console.log(wallet);
-    } catch (error) {
-      console.error("Create wallet error: ", error);
-    }
-  };
-
   const onSign = async () => {
     try {
       const signature = await signMessage("I hereby vote for foobar", {
@@ -130,19 +120,31 @@ export default function LoginPage() {
     }
   };
 
-  const [privyWallets] = getWallets(user);
+  const onSend = async () => {
+    try {
+      const receipt = await sendTransaction({
+        to: "0xA662b98CE3e25102C6A1B5dA5e667D6b25CBd85C",
+        chainId: 5,
+        value: ethers.parseEther("0.005"),
+      });
+      console.log("Transaction Receipt", receipt);
+    } catch (error) {
+      console.error(`Failed to send transaction with error ${error}`);
+    }
+  };
 
   return (
     <>
       <Head>
-        <title>Internal Auth Demo</title>
+        <title>Fiat Onramp Demo</title>
       </Head>
 
       <main className="flex min-h-screen flex-col bg-privy-light-blue px-4 py-6 sm:px-20 sm:py-10">
+        <OnRampModal onrampUrl={onrampUrl} onClose={() => setOnrampUrl(null)} />
         {ready && authenticated ? (
           <>
             <div className="flex flex-row justify-between">
-              <h1 className="text-2xl font-semibold">Privy Auth Demo</h1>
+              <h1 className="text-2xl font-semibold">Fiat Onramp Demo</h1>
               <div className="flex flex-row gap-4">
                 <button
                   onClick={deleteUser}
@@ -159,59 +161,40 @@ export default function LoginPage() {
               </div>
             </div>
             <p className="mt-6 mb-2 text-sm font-bold uppercase text-gray-600">
-              Wallets
+              My Embedded Wallet
             </p>
             <div className="flex gap-4">
-              {privyWallets.length === 0 && (
-                <div className="flex flex-col items-start gap-2 py-2">
-                  <button
-                    className="w-[180px] rounded-md bg-violet-600 py-2 px-4 text-sm text-white transition-all hover:bg-violet-700"
-                    onClick={onCreate}
-                  >
-                    Create privy wallet
-                  </button>
-                </div>
-              )}
-              <div className="flex flex-wrap gap-4">
-                {privyWallets.map((wallet) => {
-                  return (
-                    <div
-                      key={wallet.address}
-                      className="flex w-[180px] flex-col items-center gap-2 rounded-xl bg-white p-2"
-                    >
-                      <button
-                        className="w-full rounded-md border border-violet-600 px-4 py-2 text-sm text-violet-600 transition-all hover:border-violet-700 hover:text-violet-700 disabled:border-gray-500 disabled:text-gray-500 hover:disabled:text-gray-500"
-                        disabled
-                      >
-                        {formatAddress(wallet.address)}
-                      </button>
-                      <p className="text-sm">Privy wallet</p>
-                      <button
-                        className="w-full rounded-md border-none bg-violet-600 px-4 py-2 text-sm text-white hover:bg-violet-700"
-                        onClick={onSign}
-                      >
-                        Sign message
-                      </button>
-                    </div>
-                  );
-                })}
+              <div className="flex w-[180px] flex-col items-center gap-2 rounded-xl bg-white p-2">
+                <button
+                  className="w-full rounded-md border border-violet-600 px-4 py-2 text-sm text-violet-600 transition-all hover:border-violet-700 hover:text-violet-700 disabled:border-gray-500 disabled:text-gray-500 hover:disabled:text-gray-500"
+                  disabled
+                >
+                  {formatAddress(user?.wallet?.address)}
+                </button>
+                <p className="text-sm">Privy wallet</p>
+                <button
+                  className="w-full rounded-md border-none bg-violet-600 px-4 py-2 text-sm text-white hover:bg-violet-700"
+                  onClick={onSign}
+                >
+                  Sign message
+                </button>
               </div>
-
-              {!!user?.wallet && (
-                <div className="flex flex-col items-start gap-2 py-2">
-                  <button
-                    onClick={() => {
-                      const address = user?.wallet?.address;
-                      if (!address) return;
-                      fundWallet?.(address, user?.email?.address);
-                    }}
-                    className="rounded-md border-none bg-violet-600 px-4 py-2 text-sm text-white transition-all hover:bg-violet-700"
-                  >
-                    Fund embedded wallet
-                  </button>
-                </div>
-              )}
-
+              <div className="flex flex-col items-start gap-2 py-2">
+                <button
+                  onClick={fundWallet}
+                  className="rounded-md border-none bg-violet-600 px-4 py-2 text-sm text-white transition-all hover:bg-violet-700"
+                >
+                  Fund embedded wallet
+                </button>
+              </div>
+              <div className="flex flex-col items-start gap-2 py-2">
+                <button
+                  onClick={onSend}
+                  className="rounded-md border-none bg-violet-600 px-4 py-2 text-sm text-white transition-all hover:bg-violet-700"
+                >
+                  Send a transaction
+                </button>
+              </div>
               <div className="flex flex-col items-start gap-2 py-2">
                 <button
                   onClick={exportWallet}
@@ -239,7 +222,7 @@ export default function LoginPage() {
             <p className="mt-6 text-sm font-bold uppercase text-gray-600">
               My balance
             </p>
-            <p>Some ETH</p>
+            <p>{balance}</p>
 
             <p className="mt-6 text-sm font-bold uppercase text-gray-600">
               User object
