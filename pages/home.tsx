@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { usePrivy } from "@privy-io/react-auth";
 import Head from "next/head";
 import { clearDatadogUser } from "../lib/datadog";
-import OnRampModal from "../components/onramp";
+import OnrampModal from "../components/onramp";
 import { ethers } from "ethers";
 
 function formatAddress(address?: string | null) {
@@ -140,7 +140,7 @@ export default function HomePage() {
       </Head>
 
       <main className="flex min-h-screen flex-col bg-privy-light-blue px-4 py-6 sm:px-20 sm:py-10">
-        <OnRampModal onrampUrl={onrampUrl} onClose={() => setOnrampUrl(null)} />
+        <OnrampModal onrampUrl={onrampUrl} onClose={() => setOnrampUrl(null)} />
         {ready && authenticated ? (
           <>
             <div className="flex flex-row justify-between">

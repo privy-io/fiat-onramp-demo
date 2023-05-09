@@ -7,7 +7,7 @@ type OnRampModalProps = {
   onClose: () => void;
 };
 
-export default function OnRampModal({ onrampUrl, onClose }: OnRampModalProps) {
+export default function OnrampModal({ onrampUrl, onClose }: OnRampModalProps) {
   const onContinue = () => {
     // This should never happen, as the modal is only open when onrampUrl is defined
     if (!onrampUrl) return;
