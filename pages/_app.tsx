@@ -51,11 +51,6 @@ const themes: Array<PrivyTheme> = [
 
 function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter();
-  const [theme, setTheme] = useLocalStorage(
-    "privy-auth-demo:theme",
-    themes[0]!
-  );
-  const darkMode = useDarkMode();
   useMemo(initializeDatadog, []);
 
   return (
@@ -100,28 +95,13 @@ function MyApp({ Component, pageProps }: AppProps) {
         apiUrl="https://auth.staging.privy.io"
         config={{
           appearance: {
-            theme:
-              theme.name === "System"
-                ? darkMode
-                  ? "dark"
-                  : "light"
-                : theme.theme,
-            accentColor: theme.accentColor,
-            logo:
-              theme.name === "System"
-                ? darkMode
-                  ? privyLogoDark
-                  : privyLogo
-                : theme.logo,
+            logo: privyLogo
           },
         }}
         createPrivyWalletOnLogin
       >
         <Component
           {...pageProps}
-          themes={themes}
-          theme={theme}
-          setTheme={setTheme}
         />
       </PrivyProvider>
     </>

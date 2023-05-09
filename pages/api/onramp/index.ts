@@ -76,7 +76,6 @@ export default async function handler(
     .createHmac("sha256", MOONPAY_SECRET_KEY)
     .update(onrampUrl.search)
     .digest("base64");
-  7;
   onrampUrl.searchParams.set("signature", urlSignature);
 
   // Return the onramp URL to the client

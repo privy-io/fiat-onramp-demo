@@ -77,9 +77,6 @@ export default function HomePage() {
         }
       );
       setOnrampUrl(onrampResponse.data.url as string);
-      // const url = new URL(onrampResponse.data.url as string);
-      // url.searchParams.set('redirectURL', window.location.href);
-      // setOnrampUrl(url.toString());
     } catch (error) {
       console.error(error);
     }
