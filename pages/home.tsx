@@ -164,20 +164,35 @@ export default function HomePage() {
               My Embedded Wallet
             </p>
             <div className="flex flex-row flex-wrap gap-4">
-              <div className="flex w-[180px] flex-col items-center gap-2 rounded-xl bg-white p-2">
-                <button
-                  className="w-full rounded-md border border-violet-600 px-4 py-2 text-sm text-violet-600 transition-all hover:border-violet-700 hover:text-violet-700 disabled:border-gray-500 disabled:text-gray-500 hover:disabled:text-gray-500"
-                  disabled
-                >
-                  {formatAddress(user?.wallet?.address)}
-                </button>
-                <p className="text-sm">Privy wallet</p>
-                <button
-                  className="w-full rounded-md border-none bg-violet-600 px-4 py-2 text-sm text-white hover:bg-violet-700"
-                  onClick={onSign}
-                >
-                  Sign message
-                </button>
+              <div>
+                <div className="flex w-[180px] flex-col items-center gap-2 rounded-xl bg-white p-2">
+                  <button
+                    className="w-full rounded-md border border-violet-600 px-4 py-2 text-sm text-violet-600 transition-all hover:border-violet-700 hover:text-violet-700 disabled:border-gray-500 disabled:text-gray-500 hover:disabled:text-gray-500"
+                    disabled
+                  >
+                    {formatAddress(user?.wallet?.address)}
+                  </button>
+                  <p className="text-sm">Privy wallet</p>
+                  <button
+                    className="w-full rounded-md border-none bg-violet-600 px-4 py-2 text-sm text-white hover:bg-violet-700"
+                    onClick={onSign}
+                  >
+                    Sign message
+                  </button>
+                </div>
+                {signature && (
+                  <>
+                    <p className="mt-6 text-sm font-bold uppercase text-gray-600">
+                      Privy wallet signature
+                    </p>
+                    <textarea
+                      value={signature}
+                      className="mt-2 w-[200px] max-w-4xl rounded-md bg-slate-700 p-4 font-mono text-xs text-slate-50 sm:text-sm"
+                      rows={1}
+                      disabled
+                    />
+                  </>
+                )}
               </div>
               <div className="flex flex-col items-start gap-2 py-2">
                 <button
@@ -203,26 +218,12 @@ export default function HomePage() {
                   Export embedded wallet
                 </button>
               </div>
-
-              {signature && (
-                <>
-                  <p className="mt-6 text-sm font-bold uppercase text-gray-600">
-                    Privy wallet signature
-                  </p>
-                  <textarea
-                    value={signature}
-                    className="mt-2 w-[200px] max-w-4xl rounded-md bg-slate-700 p-4 font-mono text-xs text-slate-50 sm:text-sm"
-                    rows={1}
-                    disabled
-                  />
-                </>
-              )}
             </div>
 
             <p className="mt-6 text-sm font-bold uppercase text-gray-600">
               My balance
             </p>
-            <p>{balance}</p>
+            <p>{balance} Goerli ETH</p>
 
             <p className="mt-6 text-sm font-bold uppercase text-gray-600">
               User object
