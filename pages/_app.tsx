@@ -56,14 +56,12 @@ function MyApp({ Component, pageProps }: AppProps) {
         apiUrl="https://auth.staging.privy.io"
         config={{
           appearance: {
-            logo: privyLogo
+            logo: privyLogo,
           },
         }}
         createPrivyWalletOnLogin
       >
-        <Component
-          {...pageProps}
-        />
+        <Component {...pageProps} />
       </PrivyProvider>
     </>
   );
