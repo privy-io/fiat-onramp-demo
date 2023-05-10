@@ -116,9 +116,9 @@ export default function HomePage() {
   const onSend = async () => {
     try {
       const receipt = await sendTransaction({
-        to: "0xA662b98CE3e25102C6A1B5dA5e667D6b25CBd85C",
+        to: "0xFf8c476a67B2903e077b16CdB823710ea3D4BC7f",
         chainId: 5,
-        value: ethers.parseEther("0.005"),
+        value: ethers.parseEther("0.00005"),
       });
       console.log("Transaction Receipt:", receipt);
     } catch (error) {
