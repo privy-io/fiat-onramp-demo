@@ -163,7 +163,7 @@ export default function HomePage() {
             <p className="mt-6 mb-2 text-sm font-bold uppercase text-gray-600">
               My Embedded Wallet
             </p>
-            <div className="flex gap-4">
+            <div className="flex flex-row flex-wrap gap-4">
               <div className="flex w-[180px] flex-col items-center gap-2 rounded-xl bg-white p-2">
                 <button
                   className="w-full rounded-md border border-violet-600 px-4 py-2 text-sm text-violet-600 transition-all hover:border-violet-700 hover:text-violet-700 disabled:border-gray-500 disabled:text-gray-500 hover:disabled:text-gray-500"
