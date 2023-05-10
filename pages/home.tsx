@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { usePrivy } from "@privy-io/react-auth";
 import Head from "next/head";
 import { clearDatadogUser } from "../lib/datadog";
-import OnrampModal from "../components/onramp";
+import OnrampModal from "../components/Onramp";
 import { ethers } from "ethers";
 
 function formatAddress(address?: string | null) {

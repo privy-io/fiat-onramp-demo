@@ -7,8 +7,6 @@ import { initializeDatadog, setDatadogUser } from "../lib/datadog";
 import { useMemo } from "react";
 import React from "react";
 import type { PrivyTheme } from "../src/types";
-import useLocalStorage from "../src/useLocalStorage";
-import useDarkMode from "../src/useMedia";
 
 const privyLogo =
   "https://pub-dc971f65d0aa41d18c1839f8ab426dcb.r2.dev/privy.png";
