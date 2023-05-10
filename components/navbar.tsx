@@ -45,9 +45,6 @@ export default function Navbar({ items, accountId, appName }: NavbarProps) {
   const unselectedItemClass =
     "hover:cursor-pointer rounded-full px-3 py-2 text-lg font-medium text-gray-300 hover:bg-gray-700 hover:text-white";
 
-  // Navigate to a resource sub-page:
-  // /apps/:appId/settings
-  // /accounts/:accountId/users
   const navigateTo = (item: NavbarItem) => {
     router.push(`/${item.resource}/${resourceId}/${item.id}`);
   };

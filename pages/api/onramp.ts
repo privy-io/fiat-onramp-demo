@@ -25,6 +25,7 @@ const client = new PrivyClient(
   }
 );
 
+// POST /api/onramp will return an onramp URL for the current user
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<{ url: string } | APIError>

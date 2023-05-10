@@ -3,8 +3,6 @@ import type { AppProps } from "next/app";
 import Head from "next/head";
 import { PrivyProvider } from "@privy-io/react-auth";
 import { useRouter } from "next/router";
-import { initializeDatadog, setDatadogUser } from "../lib/datadog";
-import { useMemo } from "react";
 import React from "react";
 
 const privyLogo =
@@ -12,7 +10,6 @@ const privyLogo =
 
 function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter();
-  useMemo(initializeDatadog, []);
 
   return (
     <>
@@ -45,12 +42,14 @@ function MyApp({ Component, pageProps }: AppProps) {
         <link rel="icon" href="/favicon.ico" sizes="any" />
 
         <title>Fiat Onramp Demo</title>
-        <meta name="description" content="Internal auth demo for Privy Auth" />
+        <meta
+          name="description"
+          content="Demo implementation of Privy with a fiat on-ramp"
+        />
       </Head>
       <PrivyProvider
         appId={process.env.NEXT_PUBLIC_PRIVY_APP_ID || ""}
-        onSuccess={(user) => {
-          setDatadogUser(user);
+        onSuccess={() => {
           router.push("/home");
         }}
         apiUrl="https://auth.staging.privy.io"

@@ -3,7 +3,6 @@ import { usePrivy } from "@privy-io/react-auth";
 import Head from "next/head";
 import { useEffect } from "react";
 import { useRouter } from "next/router";
-import { clearDatadogUser } from "../lib/datadog";
 
 export default function LoginPage() {
   const { logout } = usePrivy();
@@ -11,7 +10,6 @@ export default function LoginPage() {
 
   useEffect(() => {
     logout().then(() => {
-      clearDatadogUser();
       router.push("/");
     });
   }, [logout, router]);

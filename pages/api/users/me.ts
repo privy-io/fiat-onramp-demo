@@ -18,6 +18,7 @@ const client = new PrivyClient(
   }
 );
 
+// DELETE /api/me will delete the user from this app
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<null | APIError>

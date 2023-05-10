@@ -12,6 +12,7 @@ export default function OnrampModal({ onrampUrl, onClose }: OnRampModalProps) {
     // This should never happen, as the modal is only open when onrampUrl is defined
     if (!onrampUrl) return;
 
+    // Open the onramp URL in a new tab and clear React state
     window.open(onrampUrl, "_blank");
     onClose();
   };
@@ -57,6 +58,7 @@ export default function OnrampModal({ onrampUrl, onClose }: OnRampModalProps) {
                         src="/images/moonpay.svg"
                         height="50px"
                         width="200px"
+                        alt="Moonpay Logo"
                       />
                     </Dialog.Title>
                   </div>
@@ -82,7 +84,7 @@ export default function OnrampModal({ onrampUrl, onClose }: OnRampModalProps) {
                     </p>
                     <p className="mb-3">
                       Click{" "}
-                      <span className="text-indig-600 font-semibold">
+                      <span className="font-semibold text-indigo-600">
                         Continue
                       </span>{" "}
                       to open Moonpay in a new tab.

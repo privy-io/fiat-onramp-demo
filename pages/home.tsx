@@ -3,7 +3,6 @@ import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { usePrivy } from "@privy-io/react-auth";
 import Head from "next/head";
-import { clearDatadogUser } from "../lib/datadog";
 import OnrampModal from "../components/onramp";
 import { ethers } from "ethers";
 
@@ -31,11 +30,10 @@ export default function HomePage() {
   const [signature, setSignature] = useState<string | null>(null);
   // Fiat onramp URL returned from server
   const [onrampUrl, setOnrampUrl] = useState<string | null>(null);
+  // Balance of embedded wallet
   const [balance, setBalance] = useState<string | undefined>(undefined);
 
-  const hasEmbeddedWallet =
-    user && user.wallet && user.wallet.walletClient === "privy";
-
+  // Method to get the user's Goerli ETH balance
   const updateBalance = async () => {
     if (!user?.wallet?.address) return;
     try {
@@ -49,25 +47,28 @@ export default function HomePage() {
       console.error(`Cannot connect to Infura with error: ${error}`);
     }
   };
-  updateBalance();
 
+  // Method to invoke fiat on-ramp flow for current user
   const fundWallet = async () => {
-    // Error if user does not have an embedded wallet
-    if (!hasEmbeddedWallet) {
+    // Error if user does not have a wallet
+    if (!ready || !authenticated || !user?.wallet?.address) {
       console.error("Unable to fund wallet.");
-      return false;
+      return;
     }
 
-    // Get onramp URL from server and kick off onramp flow
+    // Get details about the current user's on-ramp flow
+    const walletAddress = user?.wallet?.address;
+    const emailAddress = user?.email?.address;
+    const redirectUrl = window.location.href;
+    const authToken = await getAccessToken();
+
+    // Get onramp URL from server
     try {
-      const authToken = await getAccessToken();
-      const redirectUrl = window.location.href;
-      // This simulates a request to Privy's server
       const onrampResponse = await axios.post(
         "/api/onramp",
         {
-          address: user!.wallet!.address,
-          email: user?.email?.address,
+          address: walletAddress,
+          email: emailAddress,
           redirectUrl: redirectUrl,
         },
         {
@@ -76,18 +77,13 @@ export default function HomePage() {
           },
         }
       );
+
+      // Open modal to kick off on-ramp flow
       setOnrampUrl(onrampResponse.data.url as string);
     } catch (error) {
       console.error(error);
     }
   };
-
-  useEffect(() => {
-    if (ready && !authenticated) {
-      clearDatadogUser();
-      router.push("/");
-    }
-  }, [ready, authenticated, router]);
 
   async function deleteUser() {
     const authToken = await getAccessToken();
@@ -124,11 +120,18 @@ export default function HomePage() {
         chainId: 5,
         value: ethers.parseEther("0.005"),
       });
-      console.log("Transaction Receipt", receipt);
+      console.log("Transaction Receipt:", receipt);
     } catch (error) {
       console.error(`Failed to send transaction with error ${error}`);
     }
   };
+
+  useEffect(() => {
+    if (ready && !authenticated) {
+      router.push("/");
+    }
+    updateBalance();
+  }, [ready, authenticated, router]);
 
   return (
     <>
