@@ -1,39 +1,56 @@
-# [INTERNAL] Privy Auth Demo
+# Privy Fiat On-Ramp Demo
 
-This is a simple browser and mobile optimized demo of Privy Auth, for internal development and QA use only. Points to the staging database and continuously released beta versions of @privy-io/react-auth.
+This is a demo of integrating [Privy](https://www.privy.io/) alongside a fiat on-ramp, [Moonpay](https://www.moonpay.com/). In this app, users can sign in with their email address, create an embedded wallet, and then _fund_ their embedded wallet on the Goerli testnet.
+
+This app is built using [NextJS](https://nextjs.org/), [TailwindCSS](https://tailwindcss.com/), [`@privy-io/react-auth`](https://www.npmjs.com/package/@privy-io/react-auth), and [`ethers`](https://docs.ethers.org/v5/).
+
+## Integration Overview
+
+At a high-level, integrating Privy with a fiat on-ramp provider (Moonpay or otherwise) looks like:
+1. In your **frontend**, collect details about your user and their desired on-ramp flow, such as their wallet address, email, the asset they'd like to purchase, how much they'd like to purchase, etc. Make a request to your backend with this info.
+2. In your **backend**, configure your user's on-ramp flow by taking a generic fiat on-ramp URL from your provider and attaching the details from step (1) as URL query parameters. Authorize this on-ramp URL with your provider's secret key, and return the URL to the frontend.
+3. In your **frontend**, take your user to the URL from step (2) by redirecting them to it in a new tab, or showing it within an `iframe` embedded in your site. In this URL, your user will be able to complete their purchase.
 
 ## Useful Code Snippets
+
 These are the specific points of integration:
 
-### `pages/_app.tsx`
-- The `PrivyProvider` is our top-level component in the hierarchy.
-- In the `PrivyProvider`, we also pass in:
-  - our Privy `appId` (retrieved from the Privy Console)
-  - an (optional) `onSuccess` callback that redirects the user to the dashboard page upon login. 
+### `pages/home.tsx`
+- See the `fundWallet` method for an example of how to collect information about the current user and send it in a request to your backend.
+- See the `updateBalance` method for an example of how to retrieve the user's current wallet balance
+- See also sample uses of `signMessage`, `sendTransaction`, `exportWallet`, and other embedded wallet functionality.
 
-### `pages/index.tsx`
-- This landing page includes a button that invokes Privy Auth's `login` hook when clicked. This prompts the user to sign-in with a wallet or their email address. 
+### `components/Onramp.tsx`
+- See a sample modal to provide explanatory context about a fiat on-ramp to your user
+- See how to redirect your user to the on-ramp URL in a new tab
 
-### `pages/dashboard.tsx`
-- If a user is not `authenticated`, we redirect them back to our landing page. Note that we first check if `ready` is true before taking any actions based off of the `authenticated` hook. This ensures we do not take any actions based off of outdated authentication state that will soon be updated.
-- We use the `user` object to show the user's DID and linked accounts.
-- The `linkEmail` and `linkWallet` hooks to allow a user to link those accounts if they have not already connected them.
-- The `logout` hook to allow the user to logout. 
+### `pages/api/onramp.ts`
+- The `POST` handler in this file receives the on-ramp configuration from the front-end and constructs the on-ramp URL with this configuration
+- See how to configure the on-ramp URL via query parameters
+- See how to authorize the on-ramp URL by signing it with your provider's secret key
 
+## Local development
 
-## Installation
-
+1. Clone this repository
 ```sh
-# Clone repo
-git clone git@github.com:privy-io/internal-auth-demo.git
-cd internal-auth-demo
+git clone git@github.com:privy-io/fiat-onramp-demo.git
+cd fiat-onramp-demo
+```
 
-# Create .env.local file from example, filling in your Privy App ID.
+2. Create your `.env.local` file from `.env.local.example`. Fill in your:
+- Privy App ID and App Secret
+- Infura API Key
+- Moonpay Base URL and Moonpay Secret Key
+```
 cp .env.example.local .env.local
+```
 
-# Install dependencies
+3. Install your dependencies
+```
 npm i
+```
 
-# Start the demo
+4. Start your app, and visit `http://localhost:3200` to test it!
+```
 npm run dev
 ```

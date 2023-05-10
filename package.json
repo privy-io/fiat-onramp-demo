@@ -8,16 +8,17 @@
     "dev": "next dev -p 3200",
     "build": "next build",
     "start": "next start",
-    "format": "npx prettier --write \"{__tests__,components,pages,styles}/**/*.{ts,tsx,js,jsx}\"",
+    "format": "npx prettier --write \"{__tests__,components,hooks,pages,styles}/**/*.{ts,tsx,js,jsx}\"",
     "lint": "next lint && npx prettier --check \"{__tests__,components,pages,styles}/**/*.{ts,tsx,js,jsx}\" && npx tsc --noEmit"
   },
   "dependencies": {
-    "@datadog/browser-rum": "^4.32.1",
     "@headlessui/react": "^1.7.3",
     "@heroicons/react": "^2.0.12",
-    "@privy-io/react-auth": "1.21.0-beta.9",
-    "@privy-io/server-auth": "1.3.0-beta.2",
+    "@privy-io/react-auth": "1.23.0",
+    "@privy-io/server-auth": "1.3.1",
     "@tailwindcss/forms": "^0.5.3",
+    "crypto": "^1.0.1",
+    "ethers": "^6.3.0",
     "next": "latest",
     "react": "18.2.0",
     "react-dom": "18.2.0"
