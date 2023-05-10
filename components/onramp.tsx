@@ -44,7 +44,7 @@ export default function OnrampModal({ onrampUrl, onClose }: OnRampModalProps) {
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <Dialog.Panel className="relative my-8 w-5/12 transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-2 text-left shadow-xl transition-all">
+              <Dialog.Panel className="relative my-8 w-5/6 transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-2 text-left shadow-xl transition-all md:w-5/12">
                 <div>
                   <div className="text-center sm:mt-3">
                     <Dialog.Title
