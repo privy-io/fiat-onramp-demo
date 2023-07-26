@@ -52,7 +52,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         onSuccess={() => {
           router.push("/home");
         }}
-        apiUrl="https://auth.staging.privy.io"
+        apiUrl={process.env.NEXT_PUBLIC_PRIVY_AUTH_URL || ""}
         config={{
           appearance: {
             logo: privyLogo,
