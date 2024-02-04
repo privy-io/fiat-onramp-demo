@@ -52,6 +52,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         onSuccess={() => {
           router.push("/home");
         }}
+        // @ts-ignore
         apiUrl={process.env.NEXT_PUBLIC_PRIVY_AUTH_URL || ""}
         config={{
           appearance: {
