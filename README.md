@@ -1,5 +1,7 @@
 # Privy Fiat On-Ramp Demo
 
+> **This repository is archived.** For up-to-date examples, please visit [github.com/privy-io/examples](https://github.com/privy-io/examples).
+
 This is a demo of integrating [Privy](https://www.privy.io/) alongside a fiat on-ramp, [Moonpay](https://www.moonpay.com/). In this app, users can sign in with their email address, create an embedded wallet, and then _fund_ their embedded wallet on the Goerli testnet.
 
 This app is built using [NextJS](https://nextjs.org/), [TailwindCSS](https://tailwindcss.com/), [`@privy-io/react-auth`](https://www.npmjs.com/package/@privy-io/react-auth), and [`ethers`](https://docs.ethers.org/v5/).
